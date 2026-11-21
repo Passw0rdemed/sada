@@ -6,8 +6,8 @@
   const ACCOUNTS = {};
   const PALETTES = { brand: ['nabd'], collection: ['rose', 'lavender', 'coral', 'pearl'] };
   const SWATCH = { nabd: ['#0B1D2D', '#0F766E', '#22C55E'], rose: ['#3A1424', '#984560', '#E8A7BE'], lavender: ['#1E1838', '#5A4AB5', '#B9A8F0'], coral: ['#34170F', '#B0452D', '#F2B49A'], pearl: ['#1C1A16', '#86652A', '#E6D3A3'] };
-  const VIEWS = ['today', 'radar', 'studio', 'approvals', 'calendar', 'inbox', 'analytics', 'ledger', 'team', 'library', 'notes'];
-  const NAV = [['grp.work', ['today', 'radar', 'studio', 'approvals']], ['grp.track', ['calendar', 'inbox', 'analytics', 'ledger']], ['grp.manage', ['team', 'library', 'notes']]];
+  const VIEWS = ['today', 'radar', 'studio', 'approvals', 'dashboard', 'calendar', 'inbox', 'analytics', 'ledger', 'team', 'library', 'notes'];
+  const NAV = [['grp.work', ['today', 'radar', 'studio', 'approvals']], ['grp.track', ['dashboard', 'calendar', 'inbox', 'analytics', 'ledger']], ['grp.manage', ['team', 'library', 'notes']]];
   const SLA = { low: 60, medium: 240, religious: 120, sensitive: 120, crisis: 15 };
   const TZ = 'Asia/Riyadh';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -136,7 +136,7 @@
     data: 'M12 5c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3zM4 8v8c0 1.7 3.6 3 8 3s8-1.3 8-3V8M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3', design: 'M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4M15 9.5h.01',
     video: 'M4 6h11v12H4zM15 10l5-3v10l-5-3', hashtags: 'M9 4L7 20M17 4l-2 16M4 9h16M3 15h16', localize: 'M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M3 12h18M12 3c2.5 2.5 3.5 6 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-6-3.5-9s1-6.5 3.5-9z',
     review: 'M9 11l3 3 8-8M20 12v7H4V5h11', crisiswatch: 'M12 3l10 18H2zM12 10v5M12 18v.01', reports: 'M5 20V11M11 20V5M17 20v-8M3 20h18',
-    library: 'M4 4h6v16H4zM14 4h6v16h-6zM10 8h4',
+    library: 'M4 4h6v16H4zM14 4h6v16h-6zM10 8h4', dashboard: 'M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z',
   };
   P.image_agent = P.image; P.analytics_agent = P.analytics;
   const ic = (k, cls = '') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${P[k] || P.today}"/></svg>`;
@@ -406,7 +406,7 @@
     const ev = EV[sel.ev], l = sel.langs.includes(S.lang) ? S.lang : sel.langs[0];
     const statusChip = a => a.status === 'pending' ? `<span class="chip warn">${t('apv.pending')}</span>` : a.status === 'approved' ? `<span class="chip ok">${t('apv.approved')}</span>` : `<span class="chip crit">${t('apv.rejected')}</span>`;
     const cur = sel.chain.find(c => c.status === 'current');
-    return `<div class="grid g-list">
+    return `${approvalsStrip()}<div class="grid g-list">
       <div class="stack"><span class="meta">${t('apv.queue')}</span>${list.map(a => { const e = EV[a.ev], left = a.sla - minsSince(a.at); return `
         <button class="qitem" data-a="selApproval" data-v="${a.id}" aria-current="${a.id === sel.id}"><div class="row">${lvChip(a.g.level)}${statusChip(a)}<span class="spacer"></span>${a.status === 'pending' ? `<span class="meta num ${left < 0 ? '' : ''}">${left >= 0 ? t('apv.slaLeft', { n: left }) : t('apv.slaOver')}</span>` : ''}</div>
           <b>${esc(evTitle(e))}</b><span class="meta">${L(CATS[e.cat])} · ${t('apv.submitted', { t: ago(minsSince(a.at)) })}</span></button>`; }).join('')}</div>
@@ -426,6 +426,85 @@
           : `<div class="row"><button class="btn pri" data-a="approve" ${S.crisis && ev.cat !== 'crisis' ? 'disabled' : ''}>${ic('check')}${t('apv.approve')} · ${L(ROLE_NAME[cur.role])}</button><button class="btn ghost" data-a="reject">${t('apv.reject')}</button>${S.crisis && ev.cat !== 'crisis' ? `<span class="meta">${t('studio.blocked.crisis')}</span>` : ''}</div>`) : sel.reason ? `<div class="note crit">${ic('x')}<span>${esc(sel.reason)}</span></div>` : ''}
       </div></div>`;
   };
+
+  /* ---------------- dashboards ---------------- */
+  const PF_ORDER = ['instagram', 'x', 'linkedin', 'tiktok', 'snapchat', 'whatsapp'];
+  const SERIES = { instagram: 's1', x: 's2', linkedin: 's3', tiktok: 's4', snapchat: 's5', whatsapp: 's6', ar: 's1', en: 's2', ur: 's3' };
+  const pct = (v, tot) => (tot ? Math.round(v / tot * 100) : 0);
+  const fmtN = n => new Intl.NumberFormat(S.lang === 'ar' ? 'ar-SA-u-nu-latn' : 'en-GB').format(n);
+  const dataTable = (head, rows) => `<details class="dtable"><summary>${t('db.table')}</summary><div class="tbl-wrap"><table style="min-width:0"><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td class="num">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>`;
+  function hbars(items, max) {
+    return `<div class="hbars">${items.map(it => `<div class="hbar" data-tip="${esc(it.label + ': ' + it.text)}"><span class="hb-l">${esc(it.label)}</span><span class="hb-t"><i style="width:${Math.max(2, it.value / max * 100).toFixed(1)}%;background:${it.color}"></i></span><span class="hb-v num">${esc(it.text)}</span></div>`).join('')}</div>`;
+  }
+  function legend(items) { return `<div class="legend">${items.map(i => `<span><i style="background:${i.color}"></i>${esc(i.label)}</span>`).join('')}</div>`; }
+  const sentColor = ['var(--s1)', 'var(--s-neutral)', 'var(--s2)'];
+  const sentLabel = () => [t('mood.pos'), t('mood.neu'), t('mood.neg')];
+
+  V.dashboard = () => {
+    const k = id => KPIS.find(x => x.id === id), dayName = i => fmt(new Date(Date.UTC(2026, 10, 22 + i, 9)), { weekday: S.lang === 'ar' ? 'long' : 'short' });
+    const escal = S.inbox.filter(m => m.status === 'escalated' || (m.status === 'open' && m.intent === 'complaint')).length;
+    const pfTot = PF_ORDER.reduce((a, p) => a + DASH.byPlatform[p], 0), pfMax = Math.max(...PF_ORDER.map(p => DASH.byPlatform[p]));
+    const lTot = Object.values(DASH.byLang).reduce((a, b) => a + b, 0);
+    const fKeys = ['draft', 'review', 'approved', 'published'];
+    const caseKey = { low: 'tm.case.low', medium: 'tm.case.medium', religious: 'tm.case.religious', crisis: 'tm.case.crisis' };
+    const quietSlot = h => PRAYERS.some(p => { const a = toMin(p.t) - QUIET.before, b = toMin(p.t) + QUIET.after; return a < (h + 2) * 60 && b > h * 60; });
+    const heatVals = DASH.heatDay.map(d => DASH.heatHour.map(v => Math.min(100, v + d))), hMax = Math.max(...heatVals.flat()), hMin = Math.min(...heatVals.flat());
+    const tiles = [
+      [t('db.published'), fmtN(DASH.published), true], [t('db.sla'), DASH.sla + '%', true],
+      [t('db.reply'), k('rsp').v + L(k('rsp').unit), true], [t('db.eng'), k('eng').v + k('eng').unit, true], [t('db.escal'), fmtN(escal), false],
+    ];
+    return `<div class="note warn">${ic('alert')}<span>${t('db.sampleNote')}</span></div>
+    <div class="stats">${tiles.map(([l, v, sample]) => `<div class="stat"><span class="l">${l}</span><b class="num">${v}</b><span class="meta">${sample ? t('sample') : t('db.live')}</span></div>`).join('')}</div>
+    <div class="grid g2">
+      <div class="card"><div class="card-h"><h2>${t('db.byPlatform')}</h2><span class="chip">${t('sample')}</span></div>
+        ${hbars(PF_ORDER.map(p => ({ label: pfName(p), value: DASH.byPlatform[p], text: `${DASH.byPlatform[p]} · ${pct(DASH.byPlatform[p], pfTot)}%`, color: `var(--${SERIES[p]})` })), pfMax)}
+        ${dataTable([t('lg.platform'), t('db.count'), t('db.share')], PF_ORDER.map(p => [pfName(p), DASH.byPlatform[p], pct(DASH.byPlatform[p], pfTot) + '%']))}</div>
+      <div class="card"><div class="card-h"><h2>${t('db.byLang')}</h2><span class="chip">${t('sample')}</span></div>
+        <div class="stack100" role="img" aria-label="${esc(t('db.byLang'))}">${Object.keys(DASH.byLang).map(l => `<i style="flex:${DASH.byLang[l]};background:var(--${SERIES[l]})" data-tip="${esc(langName(l) + ': ' + DASH.byLang[l] + ' · ' + pct(DASH.byLang[l], lTot) + '%')}"></i>`).join('')}</div>
+        ${legend(Object.keys(DASH.byLang).map(l => ({ label: `${langName(l)} · ${pct(DASH.byLang[l], lTot)}%`, color: `var(--${SERIES[l]})` })))}
+        <hr class="sep" style="margin:16px 0">
+        <h3 class="h3">${t('db.funnel')}</h3>
+        ${hbars(fKeys.map(f => ({ label: t('task.' + f), value: DASH.funnel[f], text: `${DASH.funnel[f]}`, color: 'var(--s1)' })), DASH.funnel.draft)}
+        ${dataTable([t('db.col.stage'), t('db.count')], fKeys.map(f => [t('task.' + f), DASH.funnel[f]]))}</div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><div class="card-h"><h2>${t('db.slaBy')}</h2><span class="chip">${t('db.target', { n: DASH.slaTarget })}</span></div>
+        <div class="target-wrap" style="--target:${DASH.slaTarget}%">${hbars(DASH.slaBy.map(x => ({ label: t(caseKey[x.k]), value: x.v, text: x.v + '%', color: 'var(--s1)' })), 100)}</div>
+        ${dataTable([t('tm.level'), t('db.share')], DASH.slaBy.map(x => [t(caseKey[x.k]), x.v + '%']))}</div>
+      <div class="card"><div class="card-h"><h2>${t('db.sentiment')}</h2><span class="chip">${t('sample')}</span></div>
+        <div class="cols" dir="ltr">${DASH.sentiment.map((d, i) => `<div class="col" data-tip="${esc(dayName(i) + ' · ' + sentLabel().map((s, j) => s + ' ' + d[j] + '%').join(' · '))}"><div class="col-bar">${[2, 1, 0].map(j => `<i style="height:${d[j]}%;background:${sentColor[j]}"></i>`).join('')}</div><span class="col-l">${esc(dayName(i))}</span></div>`).join('')}</div>
+        ${legend(sentLabel().map((l, j) => ({ label: l, color: sentColor[j] })))}
+        ${dataTable([t('db.day'), ...sentLabel()], DASH.sentiment.map((d, i) => [dayName(i), d[0] + '%', d[1] + '%', d[2] + '%']))}</div>
+    </div>
+    <div class="card"><div class="card-h"><h2>${t('db.heat')}</h2><span class="chip">${t('sample')}</span></div>
+      <div class="heat-scroll"><div class="heat" dir="ltr" style="grid-template-columns: minmax(84px,auto) repeat(${DASH.heatHours.length}, minmax(44px,1fr))">
+        <span></span>${DASH.heatHours.map(h => `<span class="hh num">${hhmm(h * 60)}</span>`).join('')}
+        ${heatVals.map((row, i) => `<span class="hd">${esc(dayName(i))}</span>${row.map((v, j) => { const q = quietSlot(DASH.heatHours[j]), a = 0.12 + 0.88 * (v - hMin) / (hMax - hMin || 1); return `<span class="hc ${q ? 'q' : ''}" style="--a:${a.toFixed(2)}" data-tip="${esc(dayName(i) + ' · ' + hhmm(DASH.heatHours[j] * 60) + '–' + hhmm(DASH.heatHours[j] * 60 + 120) + ' · ' + t('db.index') + ' ' + v + (q ? ' · ' + t('db.quiet') : ''))}"></span>`; }).join('')}`).join('')}
+      </div></div>
+      <div class="row heat-legend"><span class="meta">${t('db.lower')}</span><span class="ramp"></span><span class="meta">${t('db.higher')}</span><span class="hc q demo"></span><span class="meta">${t('db.quiet')}</span></div>
+      <p class="meta">${t('db.heatNote')} ${t('today.windowsNote')}</p></div>
+    <div class="card"><div class="card-h"><h2>${t('db.agents')}</h2><span class="chip">${t('sample')}</span></div>
+      <div class="tbl-wrap"><table><thead><tr><th>${t('db.col.agent')}</th><th>${t('db.col.stage')}</th><th>${t('db.col.runs')}</th><th>${t('db.col.time')}</th><th>${t('db.col.esc')}</th><th>${t('db.col.edit')}</th></tr></thead><tbody>
+      ${AGENTS.filter(a => a.kind !== 'layer').map(a => { const o = DASH.ops[a.id], mx = Math.max(...Object.values(DASH.ops).map(x => x[0])); return `<tr><td><div class="row" style="gap:8px;flex-wrap:nowrap"><span class="ic sm">${agentIc(a.id)}</span><b>${L(a)}</b></div></td><td>${L(STAGES[a.stage])}</td>
+        <td><div class="mini"><span class="num">${fmtN(o[0])}</span><i style="width:${Math.max(4, Math.sqrt(o[0] / mx) * 100).toFixed(0)}%"></i></div></td><td class="num">${t('db.sec', { n: o[1] })}</td><td class="num">${o[2]}%</td><td class="num">${o[3]}%</td></tr>`; }).join('')}</tbody></table></div></div>`;
+  };
+  function approvalsStrip() {
+    const pend = S.approvals.filter(a => a.status === 'pending'), over = pend.filter(a => a.sla - minsSince(a.at) < 0).length;
+    const oldest = pend.length ? Math.max(...pend.map(a => minsSince(a.at))) : 0;
+    return `<div class="strip">${['low', 'medium', 'sensitive'].map(l => `<div class="sitem">${lvChip(l)}<b class="num">${pend.filter(a => a.g.level === l).length}</b></div>`).join('')}
+      <div class="sitem"><span class="chip ${over ? 'crit' : 'ok'}">${t('strip.overdue')}</span><b class="num">${over}</b></div>
+      <div class="sitem"><span class="meta">${t('strip.oldest', { n: oldest })}</span></div><span class="spacer"></span><span class="meta">${t('db.live')}</span></div>`;
+  }
+  function inboxStrip() {
+    const by = f => S.inbox.filter(f).length, moods = ['pos', 'neu', 'neg'], langs = [...new Set(S.inbox.map(m => m.lang))];
+    return `<div class="strip">
+      <div class="sitem"><span class="meta">${t('in.open')}</span><b class="num">${by(m => m.status === 'open')}</b></div>
+      <div class="sitem"><span class="meta">${t('strip.complaints')}</span><b class="num">${by(m => m.intent === 'complaint')}</b></div>
+      <div class="sitem"><span class="meta">${t('in.escalated')}</span><b class="num">${by(m => m.status === 'escalated')}</b></div>
+      <div class="sitem sent"><div class="stack100 thin">${moods.map((m, j) => `<i style="flex:${by(x => x.mood === m) || 0.0001};background:${sentColor[j]}" data-tip="${esc(t('mood.' + m) + ': ' + by(x => x.mood === m))}"></i>`).join('')}</div>${legend(moods.map((m, j) => ({ label: `${t('mood.' + m)} ${by(x => x.mood === m)}`, color: sentColor[j] })))}</div>
+      <div class="sitem"><span class="meta">${t('strip.langs')}</span><span>${langs.map(langName).join(S.lang === 'ar' ? '، ' : ', ')}</span></div>
+      <span class="spacer"></span><span class="meta">${t('db.live')}</span></div>`;
+  }
 
   V.calendar = () => {
     const now = nowMin();
@@ -447,6 +526,7 @@
     const f = S.inboxFilter, list = S.inbox.filter(m => f === 'all' || m.status === f), sel = S.inbox.find(m => m.id === S.selInbox) || list[0];
     const pfx = m => `${pfName(m.pf)} · ${ago(m.mins)}`;
     return `<div class="row"><div class="seg" role="group">${[['all', 'in.all'], ['open', 'in.open'], ['escalated', 'in.escalated'], ['replied', 'in.replied']].map(([v, k]) => `<button data-a="inboxFilter" data-v="${v}" aria-pressed="${f === v}">${t(k)}</button>`).join('')}</div></div>
+    ${inboxStrip()}
     <div class="note">${ic('shield')}<span>${t('in.privacy')}</span></div>
     <div class="grid g-list">
       <div class="stack">${list.map(m => `<button class="qitem" data-a="selInbox" data-v="${m.id}" aria-current="${sel && m.id === sel.id}">
@@ -746,6 +826,10 @@
     if (k.startsWith('free.')) { S.studio.free[k.split('.')[1]] = el.value; S.studio.result = null; }
     else if (k === 'ledgerPf') { S.ledgerPf = el.value; render(); }
   });
+  const tipEl = document.createElement('div'); tipEl.className = 'tip'; tipEl.hidden = true; tipEl.setAttribute('role', 'tooltip'); document.body.appendChild(tipEl);
+  document.addEventListener('pointerover', e => { const el = e.target.closest('[data-tip]'); if (!el) { tipEl.hidden = true; return; } tipEl.textContent = el.dataset.tip; tipEl.hidden = false; });
+  document.addEventListener('pointermove', e => { if (tipEl.hidden) return; const w = tipEl.offsetWidth, h = tipEl.offsetHeight; tipEl.style.left = Math.min(innerWidth - w - 8, Math.max(8, e.clientX - w / 2)) + 'px'; tipEl.style.top = Math.max(8, e.clientY - h - 14) + 'px'; });
+  document.addEventListener('pointerout', e => { if (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest('[data-tip]')) tipEl.hidden = true; });
   window.addEventListener('hashchange', route);
   setInterval(() => { if (S.view === 'today' && !document.querySelector('#view :focus')) render(); }, 60000);
 

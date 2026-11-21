@@ -390,3 +390,23 @@ const PEERS = [
 ];
 const AB = { a: 4.2, b: 2.9 };
 const NEG_SHARE = { series: [6, 5, 7, 6, 8, 7, 9, 8, 11, 9, 8, 7], threshold: 25 };
+
+/* Dashboard sample data (illustrative; labelled as sample in the UI) */
+const DASH = {
+  published: 52, sla: 94,
+  byPlatform: { instagram: 18, x: 12, linkedin: 9, tiktok: 6, snapchat: 4, whatsapp: 14 },
+  byLang: { ar: 38, en: 17, ur: 8 },
+  funnel: { draft: 64, review: 58, approved: 55, published: 52 },
+  slaBy: [{ k: 'low', v: 97 }, { k: 'medium', v: 92 }, { k: 'religious', v: 88 }, { k: 'crisis', v: 100 }],
+  slaTarget: 90,
+  sentiment: [[42, 51, 7], [45, 48, 7], [40, 52, 8], [47, 46, 7], [44, 47, 9], [49, 44, 7], [51, 42, 7]],
+  heatHours: [6, 8, 10, 12, 14, 16, 18, 20, 22],
+  heatHour: [30, 42, 38, 35, 33, 40, 58, 72, 55],
+  heatDay: [0, 2, 4, 3, 6, 12, 10],
+  ops: {
+    orchestrator: [63, 2.1, 0, 0], monitor: [412, 0.4, 3, 0], competitors: [21, 6.8, 0, 4], data: [168, 1.2, 0, 0],
+    strategy: [63, 3.4, 0, 11], writing: [63, 5.9, 0, 18], design: [41, 9.6, 12, 7], video: [14, 6.2, 0, 21],
+    hashtags: [63, 1.8, 0, 9], localize: [126, 4.1, 0, 13], review: [63, 3.8, 6, 5], factcheck: [63, 4.4, 14, 3],
+    publishing: [52, 1.1, 0, 0], community: [187, 2.6, 9, 24], crisiswatch: [1008, 0.2, 1, 0], reports: [7, 7.5, 0, 6],
+  },
+};
