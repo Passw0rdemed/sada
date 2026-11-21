@@ -1,0 +1,69 @@
+{
+  "policy": "No AI-generated images of living beings (people or animals); no women in imagery; religious sites only in approved real photos; every generated asset carries a disclosure label and alt text.",
+  "assets": [
+    {
+      "file": "dates.jpg",
+      "source": "Google Gemini (image)",
+      "ai": true,
+      "living_beings": false,
+      "contents": "Palm-leaf baskets of Ajwa and Sukkari dates on a wooden stall, date clusters above"
+    },
+    {
+      "file": "shuttle.jpg",
+      "source": "Google Gemini (image); windshield tinted in post to remove an ambiguous interior shape",
+      "ai": true,
+      "living_beings": false,
+      "contents": "White shuttle bus with teal accents at an empty bus shelter on a palm-lined street"
+    },
+    {
+      "file": "museum.jpg",
+      "source": "Google Gemini (image), regenerated so the model has no miniature figurines",
+      "ai": true,
+      "living_beings": false,
+      "contents": "Architectural model of an old mud-brick town in a glass case in an empty museum hall"
+    },
+    {
+      "file": "heat.jpg",
+      "source": "Google Gemini (image); a distant seated figure on a background bench was removed in post by cloning the adjacent fence and bench",
+      "ai": true,
+      "living_beings": false,
+      "contents": "Chilled water bottle on a stone bench under a parasol beside a sunny plaza"
+    },
+    {
+      "file": "ramadan.jpg",
+      "source": "Google Gemini (image)",
+      "ai": true,
+      "living_beings": false,
+      "contents": "Brass lanterns over an empty old-town lane, crescent moon, coffee pot and dates on a table"
+    },
+    {
+      "file": "welcome.jpg",
+      "source": "Google Gemini (image)",
+      "ai": true,
+      "living_beings": false,
+      "contents": "Visitor welcome desk with folded teal sashes, maps and water bottles under a canopy"
+    },
+    {
+      "file": "dates-tiktok.mp4",
+      "source": "Google Gemini (video), re-encoded to 540x960",
+      "ai": true,
+      "living_beings": false,
+      "contents": "Macro push-in on baskets of dates with blurred palm leaves; no people, no text"
+    },
+    {
+      "file": "dates-tiktok-poster.jpg",
+      "source": "Frame from dates-tiktok.mp4",
+      "ai": true,
+      "living_beings": false,
+      "contents": "Still frame of the dates video"
+    },
+    {
+      "file": "icon.svg",
+      "source": "Hand-drawn SVG (SADA echo mark)",
+      "ai": false,
+      "living_beings": false,
+      "contents": "App icon: dot with three echo arcs on a navy-to-teal tile"
+    }
+  ],
+  "religious_content_imagery": "Quba exhibition and Prophet's Mosque etiquette posts have no generated image; they require a real photo from the approved library."
+}
