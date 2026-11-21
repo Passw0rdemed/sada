@@ -1,0 +1,399 @@
+/* ==========================================================================
+   SADA / صدى  —  themes.css  (theme tokens, WP-A)
+   --------------------------------------------------------------------------
+   Contract (attributes on <html>):
+     data-palette : absent | "nabd" (default) | "rose" | "lavender" | "coral" | "pearl"
+     data-theme   : "light" | "dark" | ABSENT (auto -> prefers-color-scheme)
+     lang         : "ar" | "en"   (drives --fh heading / --fb body font stacks)
+
+   Layers:
+     1. :root                      raw --l-* / --d-* for the brand palette + public tokens -> --l-*
+     2. :root[data-palette=X]      ONLY redefines raw --l-* / --d-* values
+     3. auto dark (media query)    ONLY maps public tokens -> --d-*
+     4. [data-theme=dark|light]    ONLY maps public tokens -> --d-* / --l-*
+   Palette blocks never touch public tokens and mode blocks never touch raw
+   values, so any palette x mode combination resolves through var().
+
+   Public tokens:
+     --bg --surface --raise --line          canvas, cards, hover fill, hairlines
+     --ink --ink2 --muted                   text: primary / secondary / meta
+     --pri --pri-ink --on-pri               accent fill / accent as text / text on accent
+     --acc --soft                           decorative accent / tinted chip bg
+     --rail1 --rail2 --rail3 --on-rail      side-rail gradient stops + its text
+     --ok --warn --crit --info (+ -bg)      semantic text on its own tinted bg
+     --shadow --glow --grain                box-shadow, focus halo rgba, rail tint
+     --fh --fb --fur --fmono                fonts: heading, body, Urdu, mono
+   All text pairs verified >= 4.5:1 (WCAG AA) in every palette x mode.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+  --fur: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", serif;
+  --fmono: ui-monospace, "SF Mono", Consolas, monospace;
+
+  /* --- Brand palette (default) raw values; semantic set shared by all palettes --- */
+  --l-bg: #F1F5F3;
+  --l-surface: #FFFFFF;
+  --l-raise: #F6F9F7;
+  --l-line: #DCE5E0;
+  --l-ink: #0B1D2D;
+  --l-ink2: #304352;
+  --l-muted: #5A6A76;
+  --l-pri: #0F766E;
+  --l-pri-ink: #0D6A63;
+  --l-on-pri: #FFFFFF;
+  --l-acc: #22C55E;
+  --l-soft: #E2EFEA;
+  --l-rail1: #0B1D2D;
+  --l-rail2: #0C3A42;
+  --l-rail3: #0F766E;
+  --l-on-rail: #F3F8F6;
+  --l-ok: #166534;
+  --l-ok-bg: #E3F4E8;
+  --l-warn: #8A4B08;
+  --l-warn-bg: #FBF0D9;
+  --l-crit: #A61B1B;
+  --l-crit-bg: #FBE7E5;
+  --l-info: #1E4FA8;
+  --l-info-bg: #E3ECFA;
+  --l-shadow: 0 1px 1px rgba(11,29,45,0.04), 0 2px 6px -1px rgba(11,29,45,0.05), 0 12px 32px -12px rgba(11,29,45,0.14), 0 0 0 1px rgba(11,29,45,0.02);
+  --l-glow: rgba(15,118,110,0.22);
+  --l-grain: rgba(199,217,207,0.06);
+
+  --d-bg: #07131C;
+  --d-surface: #0D1C28;
+  --d-raise: #132634;
+  --d-line: #1E3343;
+  --d-ink: #E7EFEC;
+  --d-ink2: #B6C6C1;
+  --d-muted: #8B9BA5;
+  --d-pri: #3FB8A9;
+  --d-pri-ink: #62D2C3;
+  --d-on-pri: #04201D;
+  --d-acc: #4ADE80;
+  --d-soft: #10353A;
+  --d-rail1: #040C13;
+  --d-rail2: #08262D;
+  --d-rail3: #0B4D49;
+  --d-on-rail: #F1F7F5;
+  --d-ok: #7EE2A8;
+  --d-ok-bg: #12291D;
+  --d-warn: #F2C46B;
+  --d-warn-bg: #2E220E;
+  --d-crit: #F6A7A0;
+  --d-crit-bg: #33171A;
+  --d-info: #9DC1F7;
+  --d-info-bg: #14233A;
+  --d-shadow: 0 1px 1px rgba(0,0,0,0.22), 0 4px 14px -4px rgba(0,0,0,0.30), 0 0 0 1px rgba(255,255,255,0.025);
+  --d-glow: rgba(63,184,169,0.28);
+  --d-grain: rgba(199,217,207,0.04);
+
+  /* --- public tokens -> light --- */
+  --bg: var(--l-bg);
+  --surface: var(--l-surface);
+  --raise: var(--l-raise);
+  --line: var(--l-line);
+  --ink: var(--l-ink);
+  --ink2: var(--l-ink2);
+  --muted: var(--l-muted);
+  --pri: var(--l-pri);
+  --pri-ink: var(--l-pri-ink);
+  --on-pri: var(--l-on-pri);
+  --acc: var(--l-acc);
+  --soft: var(--l-soft);
+  --rail1: var(--l-rail1);
+  --rail2: var(--l-rail2);
+  --rail3: var(--l-rail3);
+  --on-rail: var(--l-on-rail);
+  --ok: var(--l-ok);
+  --ok-bg: var(--l-ok-bg);
+  --warn: var(--l-warn);
+  --warn-bg: var(--l-warn-bg);
+  --crit: var(--l-crit);
+  --crit-bg: var(--l-crit-bg);
+  --info: var(--l-info);
+  --info-bg: var(--l-info-bg);
+  --shadow: var(--l-shadow);
+  --glow: var(--l-glow);
+  --grain: var(--l-grain);
+}
+
+/* rose: Dusty rose accent over blush-grey neutrals, deep plum rail */
+:root[data-palette="rose"] {
+  --l-bg: #F6F1F2;
+  --l-surface: #FFFFFF;
+  --l-raise: #FAF6F7;
+  --l-line: #EADDE1;
+  --l-ink: #2A1520;
+  --l-ink2: #4C3440;
+  --l-muted: #765F69;
+  --l-pri: #984560;
+  --l-pri-ink: #8A3D56;
+  --l-on-pri: #FFFFFF;
+  --l-acc: #D29BAA;
+  --l-soft: #F5E6EB;
+  --l-rail1: #24101C;
+  --l-rail2: #431832;
+  --l-rail3: #6A2848;
+  --l-on-rail: #FBF3F6;
+  --l-shadow: 0 1px 1px rgba(42,21,32,0.04), 0 2px 6px -1px rgba(42,21,32,0.05), 0 12px 32px -12px rgba(42,21,32,0.14), 0 0 0 1px rgba(42,21,32,0.02);
+  --l-glow: rgba(152,69,96,0.20);
+  --l-grain: rgba(242,214,224,0.06);
+
+  --d-bg: #160B11;
+  --d-surface: #21131B;
+  --d-raise: #2B1A24;
+  --d-line: #3A2530;
+  --d-ink: #F5EAEE;
+  --d-ink2: #D3BEC7;
+  --d-muted: #A68F99;
+  --d-pri: #D88CA4;
+  --d-pri-ink: #E8A7BB;
+  --d-on-pri: #2A0F1E;
+  --d-acc: #B56E86;
+  --d-soft: #3A1E2C;
+  --d-rail1: #100609;
+  --d-rail2: #2A0F20;
+  --d-rail3: #481C37;
+  --d-on-rail: #FBF3F6;
+  --d-shadow: 0 1px 1px rgba(0,0,0,0.22), 0 4px 14px -4px rgba(0,0,0,0.30), 0 0 0 1px rgba(255,255,255,0.025);
+  --d-glow: rgba(216,140,164,0.26);
+  --d-grain: rgba(242,214,224,0.04);
+}
+
+/* lavender: Soft violet accent on cool lilac-grey, deep indigo rail */
+:root[data-palette="lavender"] {
+  --l-bg: #F4F3F9;
+  --l-surface: #FFFFFF;
+  --l-raise: #F8F7FC;
+  --l-line: #E0DDEE;
+  --l-ink: #1A1838;
+  --l-ink2: #3C395B;
+  --l-muted: #65627E;
+  --l-pri: #5A4AB5;
+  --l-pri-ink: #4E3FA6;
+  --l-on-pri: #FFFFFF;
+  --l-acc: #A89CE0;
+  --l-soft: #ECE8F9;
+  --l-rail1: #14123A;
+  --l-rail2: #241F62;
+  --l-rail3: #3A318E;
+  --l-on-rail: #F5F3FD;
+  --l-shadow: 0 1px 1px rgba(26,24,56,0.04), 0 2px 6px -1px rgba(26,24,56,0.05), 0 12px 32px -12px rgba(26,24,56,0.14), 0 0 0 1px rgba(26,24,56,0.02);
+  --l-glow: rgba(90,74,181,0.20);
+  --l-grain: rgba(220,214,250,0.06);
+
+  --d-bg: #0E0D1B;
+  --d-surface: #171628;
+  --d-raise: #201E35;
+  --d-line: #2D2A46;
+  --d-ink: #EEEDF8;
+  --d-ink2: #C4C1DD;
+  --d-muted: #9794B3;
+  --d-pri: #A89AF0;
+  --d-pri-ink: #B9ADF7;
+  --d-on-pri: #15123A;
+  --d-acc: #7B6BD5;
+  --d-soft: #29244F;
+  --d-rail1: #09081E;
+  --d-rail2: #191546;
+  --d-rail3: #2B256E;
+  --d-on-rail: #F5F3FD;
+  --d-shadow: 0 1px 1px rgba(0,0,0,0.22), 0 4px 14px -4px rgba(0,0,0,0.30), 0 0 0 1px rgba(255,255,255,0.025);
+  --d-glow: rgba(168,154,240,0.26);
+  --d-grain: rgba(220,214,250,0.04);
+}
+
+/* coral: Warm terracotta-coral accent on sand-linen, deep espresso rail */
+:root[data-palette="coral"] {
+  --l-bg: #F7F2EE;
+  --l-surface: #FFFFFF;
+  --l-raise: #FBF7F4;
+  --l-line: #ECDFD6;
+  --l-ink: #2B1A12;
+  --l-ink2: #4F3A2E;
+  --l-muted: #79655A;
+  --l-pri: #B0452D;
+  --l-pri-ink: #9E3E27;
+  --l-on-pri: #FFFFFF;
+  --l-acc: #E6957B;
+  --l-soft: #F8E7DF;
+  --l-rail1: #26140C;
+  --l-rail2: #462314;
+  --l-rail3: #6E341D;
+  --l-on-rail: #FCF5F1;
+  --l-shadow: 0 1px 1px rgba(43,26,18,0.04), 0 2px 6px -1px rgba(43,26,18,0.05), 0 12px 32px -12px rgba(43,26,18,0.14), 0 0 0 1px rgba(43,26,18,0.02);
+  --l-glow: rgba(176,69,45,0.20);
+  --l-grain: rgba(250,224,208,0.06);
+
+  --d-bg: #160E0A;
+  --d-surface: #211712;
+  --d-raise: #2B1F19;
+  --d-line: #3B2C24;
+  --d-ink: #F6ECE6;
+  --d-ink2: #D7C4B9;
+  --d-muted: #A8958A;
+  --d-pri: #EE8B6E;
+  --d-pri-ink: #F4A38B;
+  --d-on-pri: #2A1209;
+  --d-acc: #C7664B;
+  --d-soft: #3D2219;
+  --d-rail1: #110905;
+  --d-rail2: #2A160D;
+  --d-rail3: #482514;
+  --d-on-rail: #FCF5F1;
+  --d-shadow: 0 1px 1px rgba(0,0,0,0.22), 0 4px 14px -4px rgba(0,0,0,0.30), 0 0 0 1px rgba(255,255,255,0.025);
+  --d-glow: rgba(238,139,110,0.26);
+  --d-grain: rgba(250,224,208,0.04);
+}
+
+/* pearl: Cool pearl-ivory neutrals with antique gold accent, warm near-black rail */
+:root[data-palette="pearl"] {
+  --l-bg: #F5F4F0;
+  --l-surface: #FFFFFD;
+  --l-raise: #F9F8F4;
+  --l-line: #E4E0D6;
+  --l-ink: #17150F;
+  --l-ink2: #3C3830;
+  --l-muted: #68625A;
+  --l-pri: #86652A;
+  --l-pri-ink: #765823;
+  --l-on-pri: #FFFFFF;
+  --l-acc: #C6A55E;
+  --l-soft: #F1EBDC;
+  --l-rail1: #0E0C09;
+  --l-rail2: #1C1812;
+  --l-rail3: #30271A;
+  --l-on-rail: #F8F4EA;
+  --l-shadow: 0 1px 1px rgba(23,21,15,0.04), 0 2px 6px -1px rgba(23,21,15,0.05), 0 12px 32px -12px rgba(23,21,15,0.14), 0 0 0 1px rgba(23,21,15,0.02);
+  --l-glow: rgba(166,129,60,0.22);
+  --l-grain: rgba(232,214,170,0.05);
+
+  --d-bg: #0F0E0C;
+  --d-surface: #191714;
+  --d-raise: #22201C;
+  --d-line: #312D26;
+  --d-ink: #F3EFE6;
+  --d-ink2: #D0C8B9;
+  --d-muted: #A1998B;
+  --d-pri: #D3AF69;
+  --d-pri-ink: #DFC07F;
+  --d-on-pri: #1A1409;
+  --d-acc: #A8843F;
+  --d-soft: #2D2616;
+  --d-rail1: #070605;
+  --d-rail2: #15120D;
+  --d-rail3: #282115;
+  --d-on-rail: #F8F4EA;
+  --d-shadow: 0 1px 1px rgba(0,0,0,0.22), 0 4px 14px -4px rgba(0,0,0,0.30), 0 0 0 1px rgba(255,255,255,0.025);
+  --d-glow: rgba(211,175,105,0.24);
+  --d-grain: rgba(232,214,170,0.035);
+}
+
+/* ---- mode mapping ---- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: var(--d-bg);
+    --surface: var(--d-surface);
+    --raise: var(--d-raise);
+    --line: var(--d-line);
+    --ink: var(--d-ink);
+    --ink2: var(--d-ink2);
+    --muted: var(--d-muted);
+    --pri: var(--d-pri);
+    --pri-ink: var(--d-pri-ink);
+    --on-pri: var(--d-on-pri);
+    --acc: var(--d-acc);
+    --soft: var(--d-soft);
+    --rail1: var(--d-rail1);
+    --rail2: var(--d-rail2);
+    --rail3: var(--d-rail3);
+    --on-rail: var(--d-on-rail);
+    --ok: var(--d-ok);
+    --ok-bg: var(--d-ok-bg);
+    --warn: var(--d-warn);
+    --warn-bg: var(--d-warn-bg);
+    --crit: var(--d-crit);
+    --crit-bg: var(--d-crit-bg);
+    --info: var(--d-info);
+    --info-bg: var(--d-info-bg);
+    --shadow: var(--d-shadow);
+    --glow: var(--d-glow);
+    --grain: var(--d-grain);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: var(--d-bg);
+  --surface: var(--d-surface);
+  --raise: var(--d-raise);
+  --line: var(--d-line);
+  --ink: var(--d-ink);
+  --ink2: var(--d-ink2);
+  --muted: var(--d-muted);
+  --pri: var(--d-pri);
+  --pri-ink: var(--d-pri-ink);
+  --on-pri: var(--d-on-pri);
+  --acc: var(--d-acc);
+  --soft: var(--d-soft);
+  --rail1: var(--d-rail1);
+  --rail2: var(--d-rail2);
+  --rail3: var(--d-rail3);
+  --on-rail: var(--d-on-rail);
+  --ok: var(--d-ok);
+  --ok-bg: var(--d-ok-bg);
+  --warn: var(--d-warn);
+  --warn-bg: var(--d-warn-bg);
+  --crit: var(--d-crit);
+  --crit-bg: var(--d-crit-bg);
+  --info: var(--d-info);
+  --info-bg: var(--d-info-bg);
+  --shadow: var(--d-shadow);
+  --glow: var(--d-glow);
+  --grain: var(--d-grain);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: var(--l-bg);
+  --surface: var(--l-surface);
+  --raise: var(--l-raise);
+  --line: var(--l-line);
+  --ink: var(--l-ink);
+  --ink2: var(--l-ink2);
+  --muted: var(--l-muted);
+  --pri: var(--l-pri);
+  --pri-ink: var(--l-pri-ink);
+  --on-pri: var(--l-on-pri);
+  --acc: var(--l-acc);
+  --soft: var(--l-soft);
+  --rail1: var(--l-rail1);
+  --rail2: var(--l-rail2);
+  --rail3: var(--l-rail3);
+  --on-rail: var(--l-on-rail);
+  --ok: var(--l-ok);
+  --ok-bg: var(--l-ok-bg);
+  --warn: var(--l-warn);
+  --warn-bg: var(--l-warn-bg);
+  --crit: var(--l-crit);
+  --crit-bg: var(--l-crit-bg);
+  --info: var(--l-info);
+  --info-bg: var(--l-info-bg);
+  --shadow: var(--l-shadow);
+  --glow: var(--l-glow);
+  --grain: var(--l-grain);
+}
+
+/* ---- typography ---- */
+html[lang="ar"] {
+  --fh: "Tajawal", "Cairo", "Segoe UI", Tahoma, sans-serif;
+  --fb: "Cairo", "Tajawal", "Segoe UI", Tahoma, sans-serif;
+}
+html[lang="en"] {
+  --fh: "Sora", "Inter", "Segoe UI", system-ui, sans-serif;
+  --fb: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+body { background: var(--bg); color: var(--ink); font-family: var(--fb); }
